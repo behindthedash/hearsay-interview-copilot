@@ -1,0 +1,18 @@
+schema: spec-driven
+
+context: |
+  Hearsay Interview Copilot is a greenfield Python/Windows application that consumes the supported public extension/session API from behindthedash/hearsay.
+  The application owns interviewer question detection, retrieval, knowledge storage, cue composition, overlay presentation, and speech-following teleprompter behavior.
+  Hearsay remains a separate dependency and owns audio capture and transcription.
+  Personal resume/project content and interview transcripts are user-owned runtime data and must never be committed to this repository.
+  Knowledge storage must support a fully local mode and may optionally support an explicitly configured private PostgreSQL database with pgvector.
+  Retrieved evidence must preserve provenance and experience status so hypothetical material cannot be presented as implemented work.
+
+rules:
+  specs:
+    - Treat files under openspec/specs as canonical greenfield capability definitions, not deltas.
+    - Use Requirement and Scenario blocks with testable WHEN/THEN behavior.
+    - Keep Hearsay integration limited to its documented public host API.
+    - Do not commit real resume, employer, customer, interview, or transcript content.
+  proposal:
+    - Future proposals must describe changes relative to the canonical specs rather than restating the product baseline.
