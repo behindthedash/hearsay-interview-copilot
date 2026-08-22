@@ -1,7 +1,7 @@
 schema: spec-driven
 
 context: |
-  Hearsay Interview Copilot is a greenfield Python/Windows application that consumes the supported public extension/session API from beh.../hearsay.
+  Hearsay Interview Copilot is a greenfield Python/Windows application that consumes the supported public extension/session API from behindthedash/hearsay.
   The application owns interviewer question detection, retrieval, knowledge storage, cue composition, overlay presentation, and speech-following teleprompter behavior.
   Hearsay remains a separate dependency and owns audio capture and transcription.
   Personal resume/project content and interview transcripts are user-owned runtime data and must never be committed to this repository.
