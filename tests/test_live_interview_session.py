@@ -21,7 +21,6 @@ from interview_copilot.session import (
     HostPreflight,
     HostSessionPolicy,
     InterviewCopilotSession,
-    InterviewCopilotSessionConfig,
     SessionState,
 )
 
@@ -233,7 +232,9 @@ def test_preflight_requires_healthy_indexed_knowledge_provider() -> None:
     assert not result.started
     assert result.state is SessionState.PREFLIGHT_FAILED
     assert host.handlers == {}
-    assert any(check.name == "knowledge_store" and not check.ok for check in result.preflight.checks)
+    assert any(
+        check.name == "knowledge_store" and not check.ok for check in result.preflight.checks
+    )
 
 
 def test_overlay_failure_degrades_consumer_without_stopping_host() -> None:
@@ -275,7 +276,13 @@ def test_hearsay_adapter_uses_only_public_contract(monkeypatch: object) -> None:
     class OutputMode(StrEnum):
         LIVE_ONLY = "live-only"
 
-    def register(name: str, handler: object, *, sources: list[HostSource], queue_size: int) -> object:
+    def register(
+        name: str,
+        handler: object,
+        *,
+        sources: list[HostSource],
+        queue_size: int,
+    ) -> object:
         registrations.append((name, handler, tuple(sources), queue_size))
         return SimpleNamespace(close=lambda: None)
 
