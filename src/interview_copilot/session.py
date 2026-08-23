@@ -157,7 +157,9 @@ class HearsayHostAdapter:
 
         actual_output_mode = _enum_value(output_mode)
         if not callable(register) or not _enum_value(remote) or not _enum_value(local):
-            return HostPreflight(ok=False, detail="Hearsay transcript subscription API is incomplete")
+            return HostPreflight(
+                ok=False, detail="Hearsay transcript subscription API is incomplete"
+            )
         if actual_output_mode != policy.output_mode:
             return HostPreflight(
                 ok=False,
@@ -276,7 +278,9 @@ class InterviewCopilotSession:
         self._last_preflight = result
         with self._lock:
             self._state = SessionState.READY if result.ok else SessionState.PREFLIGHT_FAILED
-            self._detail = None if result.ok else "; ".join(check.detail for check in result.failures)
+            self._detail = (
+                None if result.ok else "; ".join(check.detail for check in result.failures)
+            )
         return result
 
     def start(self, session_id: str) -> SessionStartResult:
@@ -429,7 +433,8 @@ class InterviewCopilotSession:
         return PreflightCheck(
             name="hearsay_host",
             ok=ok,
-            detail=result.detail or ("Hearsay host ready" if ok else "Hearsay live policy unavailable"),
+            detail=result.detail
+            or ("Hearsay host ready" if ok else "Hearsay live policy unavailable"),
         )
 
     def _preflight_store(self) -> PreflightCheck:
@@ -502,7 +507,9 @@ class InterviewCopilotSession:
         except (TypeError, ValueError, AttributeError) as exc:
             self._mark_degraded(f"invalid Remote transcript event ({type(exc).__name__})")
             return
-        if segment.source is not TranscriptSource.REMOTE or not self._matches_session(segment.session_id):
+        if segment.source is not TranscriptSource.REMOTE or not self._matches_session(
+            segment.session_id
+        ):
             return
         try:
             candidates = self.assembler.ingest(segment)
@@ -520,7 +527,9 @@ class InterviewCopilotSession:
         except (TypeError, ValueError, AttributeError) as exc:
             self._mark_degraded(f"invalid Local transcript event ({type(exc).__name__})")
             return
-        if segment.source is not TranscriptSource.LOCAL or not self._matches_session(segment.session_id):
+        if segment.source is not TranscriptSource.LOCAL or not self._matches_session(
+            segment.session_id
+        ):
             return
         if self.on_local_segment is not None:
             try:
