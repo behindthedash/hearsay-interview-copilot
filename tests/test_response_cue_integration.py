@@ -131,8 +131,7 @@ def test_cue_only_mode_remains_usable_without_teleprompter_script() -> None:
 def test_cue_projection_is_bounded_and_glanceable() -> None:
     long_text = "Evidence " + "detail " * 80
     items = tuple(
-        evidence(f"support-{index}", ExperienceStatus.IMPLEMENTED, long_text)
-        for index in range(5)
+        evidence(f"support-{index}", ExperienceStatus.IMPLEMENTED, long_text) for index in range(5)
     )
     integration = InterviewCueResponseAssembler(
         ResponseCoordinator(),
