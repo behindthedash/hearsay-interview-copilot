@@ -16,12 +16,8 @@ from .knowledge.provider import KnowledgeStore
 from .query_boundaries import QueryCandidate
 
 _TOKEN_PATTERN: Final = re.compile(r"[A-Za-z0-9_+#.-]+")
-_PRIMARY_STATUSES: Final = frozenset(
-    {ExperienceStatus.IMPLEMENTED, ExperienceStatus.PROTOTYPE}
-)
-_BRIDGE_STATUSES: Final = frozenset(
-    {ExperienceStatus.DESIGN, ExperienceStatus.HYPOTHETICAL}
-)
+_PRIMARY_STATUSES: Final = frozenset({ExperienceStatus.IMPLEMENTED, ExperienceStatus.PROTOTYPE})
+_BRIDGE_STATUSES: Final = frozenset({ExperienceStatus.DESIGN, ExperienceStatus.HYPOTHETICAL})
 _SENTINEL: Final = object()
 
 
@@ -166,9 +162,7 @@ class InterviewCueRetriever:
                 self._to_evidence(primary_result) if primary_result is not None else None
             ),
             supporting_points=supporting,
-            role_bridge=(
-                self._to_evidence(bridge_result) if bridge_result is not None else None
-            ),
+            role_bridge=(self._to_evidence(bridge_result) if bridge_result is not None else None),
             confidence=max(0.0, min(1.0, top_score)),
             latency_ms=self._elapsed_ms(started),
         )
