@@ -85,29 +85,33 @@ jobs:
       - name: Start PostgreSQL 18
         run: |
           if ! pg_lsclusters | awk '$1 == "18" && $2 == "main" { found = 1 } END { exit !found }'; then
-            sudo pg_createcluster 18 main
+            sudo pg_createcluster 18 main --port 5432
           fi
-          sudo pg_ctlcluster 18 main start || sudo pg_ctlcluster 18 main status
+
+          sudo service postgresql stop || true
+          sudo pg_conftool 18 main set port 5432
+          sudo pg_ctlcluster 18 main start
 
           for attempt in $(seq 1 30); do
             if /usr/lib/postgresql/18/bin/pg_isready -h localhost -p 5432; then
               break
             fi
             if [ "$attempt" -eq 30 ]; then
-              echo "PostgreSQL 18 did not become ready" >&2
+              echo "PostgreSQL 18 did not become ready on port 5432" >&2
+              pg_lsclusters >&2 || true
               sudo pg_ctlcluster 18 main status >&2 || true
               exit 1
             fi
             sleep 2
           done
 
-          sudo -u postgres psql --set=ON_ERROR_STOP=1 \
+          sudo -u postgres psql --port=5432 --set=ON_ERROR_STOP=1 \
             --command="CREATE ROLE copilot LOGIN PASSWORD 'copilot';"
-          sudo -u postgres createdb --owner=copilot copilot_test
-          sudo -u postgres psql --set=ON_ERROR_STOP=1 \
+          sudo -u postgres createdb --port=5432 --owner=copilot copilot_test
+          sudo -u postgres psql --port=5432 --set=ON_ERROR_STOP=1 \
             --dbname=copilot_test \
             --command="CREATE EXTENSION vector;"
-          sudo -u postgres psql --tuples-only --no-align \
+          sudo -u postgres psql --port=5432 --tuples-only --no-align \
             --dbname=copilot_test \
             --command="SELECT extversion FROM pg_extension WHERE extname = 'vector';"
       - name: Install PostgreSQL provider
