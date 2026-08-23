@@ -31,14 +31,14 @@ These tasks implement the merged grounded-response/teleprompter design in depend
 
 ## 3. `grounded-response-composition` — grounded script composer
 
-- [ ] 3.1 Define a composer interface that receives only the selected interviewer question/intent plus eligible retrieved evidence and returns speech-ready text with claim-to-evidence traceability.
-- [ ] 3.2 Ensure the composer cannot access unrelated knowledge outside the selected evidence package unless a later spec explicitly widens the retrieval contract.
-- [ ] 3.3 Preserve `implemented`, `prototype`, `design`, and `hypothetical` status in generated wording so planned or hypothetical work is never phrased as completed production experience.
-- [ ] 3.4 Prevent unsupported projects, responsibilities, technologies, metrics, outcomes, employers/customers, or implementation claims from appearing in generated scripts.
-- [ ] 3.5 Produce concise conversational spoken text rather than essay-style prose; push secondary facts into supporting cues instead of bloating the script.
-- [ ] 3.6 Retain the evidence/provenance references needed to explain where every material response claim originated.
-- [ ] 3.7 Add adversarial grounding tests where the requested answer would be stronger or more impressive if invented, and verify the composer either preserves the weaker truth or falls back from generated-script.
-- [ ] 3.8 Add tests for mixed-status evidence so a response can distinguish actual experience from architecture the user would propose for a new situation.
+- [x] 3.1 Define a composer interface that receives only the selected interviewer question/intent plus eligible retrieved evidence and returns speech-ready text with claim-to-evidence traceability.
+- [x] 3.2 Ensure the composer cannot access unrelated knowledge outside the selected evidence package unless a later spec explicitly widens the retrieval contract.
+- [x] 3.3 Preserve `implemented`, `prototype`, `design`, and `hypothetical` status in generated wording so planned or hypothetical work is never phrased as completed production experience.
+- [x] 3.4 Prevent unsupported projects, responsibilities, technologies, metrics, outcomes, employers/customers, or implementation claims from appearing in generated scripts.
+- [x] 3.5 Produce concise conversational spoken text rather than essay-style prose; push secondary facts into supporting cues instead of bloating the script.
+- [x] 3.6 Retain the evidence/provenance references needed to explain where every material response claim originated.
+- [x] 3.7 Add adversarial grounding tests where the requested answer would be stronger or more impressive if invented, and verify the composer either preserves the weaker truth or falls back from generated-script.
+- [x] 3.8 Add tests for mixed-status evidence so a response can distinguish actual experience from architecture the user would propose for a new situation.
 
 ## 4. `interview-cues` — response-package integration
 
