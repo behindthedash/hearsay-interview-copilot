@@ -6,6 +6,7 @@ from collections.abc import Callable, Sequence
 from contextlib import suppress
 from dataclasses import dataclass
 from enum import StrEnum
+from types import ModuleType
 from typing import Protocol
 
 from .cue_retrieval import (
@@ -17,7 +18,12 @@ from .cue_retrieval import (
 )
 from .knowledge.embeddings import EmbeddingModel
 from .knowledge.provider import KnowledgeStore
-from .query_boundaries import QueryCandidate, RemoteUtteranceAssembler, TranscriptSegment, TranscriptSource
+from .query_boundaries import (
+    QueryCandidate,
+    RemoteUtteranceAssembler,
+    TranscriptSegment,
+    TranscriptSource,
+)
 
 
 class SessionState(StrEnum):
@@ -130,23 +136,26 @@ class HearsayHostAdapter:
     """
 
     def __init__(self) -> None:
-        self._events: object | None = None
+        self._events: ModuleType | None = None
 
     def preflight(self, policy: HostSessionPolicy) -> HostPreflight:
         try:
             events = importlib.import_module("hearsay.events")
             host = importlib.import_module("hearsay.host")
-            register = getattr(events, "register_transcript_handler")
-            transcript_source = getattr(events, "TranscriptSource")
-            output_mode = getattr(getattr(host, "SessionOutputMode"), "LIVE_ONLY")
-            live_profile = getattr(host, "LIVE_TRANSCRIPTION_PROFILE")
-            remote = getattr(transcript_source, "REMOTE")
-            local = getattr(transcript_source, "LOCAL")
+            register = events.register_transcript_handler
+            transcript_source = events.TranscriptSource
+            output_mode = host.SessionOutputMode.LIVE_ONLY
+            live_profile = host.LIVE_TRANSCRIPTION_PROFILE
+            remote = transcript_source.REMOTE
+            local = transcript_source.LOCAL
+            actual_profile = str(live_profile.name)
         except (ImportError, AttributeError) as exc:
-            return HostPreflight(ok=False, detail=f"Hearsay public host API unavailable ({type(exc).__name__})")
+            return HostPreflight(
+                ok=False,
+                detail=f"Hearsay public host API unavailable ({type(exc).__name__})",
+            )
 
         actual_output_mode = _enum_value(output_mode)
-        actual_profile = str(getattr(live_profile, "name", ""))
         if not callable(register) or not _enum_value(remote) or not _enum_value(local):
             return HostPreflight(ok=False, detail="Hearsay transcript subscription API is incomplete")
         if actual_output_mode != policy.output_mode:
@@ -192,9 +201,9 @@ class HearsayHostAdapter:
             if not result.ok:
                 raise RuntimeError(result.detail or "Hearsay public host API unavailable")
         assert self._events is not None
-        transcript_source = getattr(self._events, "TranscriptSource")
+        transcript_source = self._events.TranscriptSource
         source_values = [transcript_source(source) for source in sources]
-        register = getattr(self._events, "register_transcript_handler")
+        register = self._events.register_transcript_handler
         return register(name, handler, sources=source_values, queue_size=queue_size)
 
 
@@ -472,7 +481,9 @@ class InterviewCopilotSession:
             "publish_cue",
             "clear",
         )
-        missing = tuple(name for name in required if not callable(getattr(self.overlay, name, None)))
+        missing = tuple(
+            name for name in required if not callable(getattr(self.overlay, name, None))
+        )
         return PreflightCheck(
             name="overlay",
             ok=not missing,
@@ -576,10 +587,10 @@ class InterviewCopilotSession:
 
 
 def _segment_from_host_event(event: object) -> TranscriptSegment:
-    session_id = str(getattr(event, "session_id"))
-    text = str(getattr(event, "text"))
-    sequence = int(getattr(event, "sequence"))
-    source = TranscriptSource(_enum_value(getattr(event, "source")))
+    session_id = str(event.session_id)
+    text = str(event.text)
+    sequence = int(event.sequence)
+    source = TranscriptSource(_enum_value(event.source))
     final = bool(getattr(event, "final", True))
     return TranscriptSegment(
         session_id=session_id,
