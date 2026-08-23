@@ -10,8 +10,7 @@ _HEADING = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
 
 def normalize_text(text: str) -> str:
     return "\n".join(
-        line.rstrip()
-        for line in text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+        line.rstrip() for line in text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
     ).strip()
 
 
