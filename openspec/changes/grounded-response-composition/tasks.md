@@ -73,18 +73,18 @@ These tasks implement the merged grounded-response/teleprompter design in depend
 
 ## 7. `local-speech-alignment` — TalkPrompter-style following behavior
 
-- [ ] 7.1 Evaluate TalkPrompter's MIT-licensed matching/recovery implementation and document which behavioral ideas or code, if any, are reused versus independently implemented.
-- [ ] 7.2 Preserve all required copyright/license notices for any reused TalkPrompter source while keeping the Interview Copilot implementation native to this repository's Python architecture.
-- [ ] 7.3 Generalize the alignment engine from prepared-only material to the currently active teleprompter document regardless of origin.
-- [ ] 7.4 Implement confidence-based nearby matching that advances only when Local speech sufficiently supports movement.
-- [ ] 7.5 Hold position during pauses or weak/noisy Local recognition rather than advancing on time or assumed reading speed.
-- [ ] 7.6 Tolerate paraphrase and minor wording differences without requiring verbatim delivery.
-- [ ] 7.7 Prevent repetition/restarts from causing runaway forward advancement.
-- [ ] 7.8 Support recovery when the user intentionally skips ahead and sustained evidence clearly matches a later section.
-- [ ] 7.9 Support rejoining after the user goes off script, including backward/restart behavior where confidence warrants it.
-- [ ] 7.10 Ensure manual pause/navigation overrides automatic matching immediately.
-- [ ] 7.11 Add deterministic synthetic tests for pause, paraphrase, restart, repetition, skip-ahead recovery, off-script waiting/rejoin, backward movement, weak confidence, and Remote speech contamination.
-- [ ] 7.12 Run the same alignment test suite against prepared and generated documents.
+- [x] 7.1 Evaluate TalkPrompter's MIT-licensed matching/recovery implementation and document which behavioral ideas or code, if any, are reused versus independently implemented.
+- [x] 7.2 Preserve all required copyright/license notices for any reused TalkPrompter source while keeping the Interview Copilot implementation native to this repository's Python architecture.
+- [x] 7.3 Generalize the alignment engine from prepared-only material to the currently active teleprompter document regardless of origin.
+- [x] 7.4 Implement confidence-based nearby matching that advances only when Local speech sufficiently supports movement.
+- [x] 7.5 Hold position during pauses or weak/noisy Local recognition rather than advancing on time or assumed reading speed.
+- [x] 7.6 Tolerate paraphrase and minor wording differences without requiring verbatim delivery.
+- [x] 7.7 Prevent repetition/restarts from causing runaway forward advancement.
+- [x] 7.8 Support recovery when the user intentionally skips ahead and sustained evidence clearly matches a later section.
+- [x] 7.9 Support rejoining after the user goes off script, including backward/restart behavior where confidence warrants it.
+- [x] 7.10 Ensure manual pause/navigation overrides automatic matching immediately.
+- [x] 7.11 Add deterministic synthetic tests for pause, paraphrase, restart, repetition, skip-ahead recovery, off-script waiting/rejoin, backward movement, weak confidence, and Remote speech contamination.
+- [x] 7.12 Run the same alignment test suite against prepared and generated documents.
 
 ## 8. `grounded-response-composition` — active/pending response lifecycle
 
