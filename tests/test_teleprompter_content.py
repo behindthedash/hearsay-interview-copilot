@@ -245,7 +245,7 @@ def test_explicit_save_creates_prepared_copy_without_transient_response_provenan
     assert generated.evidence
 
 
-def test_teardown_clears_generated_documents_and_transient_provenance_but_saved_copy_survives() -> None:
+def test_teardown_clears_transient_generated_content_but_saved_copy_survives() -> None:
     session = TeleprompterContentSession()
     store = RecordingStore()
     session.document_for_response(generated_package())
