@@ -7,9 +7,7 @@ from enum import StrEnum
 from .knowledge.models import ExperienceStatus
 from .response import EvidenceReference, ResponseEligibility, ResponseMode
 
-_SCRIPT_TRUTH_STATUSES = frozenset(
-    {ExperienceStatus.IMPLEMENTED, ExperienceStatus.PROTOTYPE}
-)
+_SCRIPT_TRUTH_STATUSES = frozenset({ExperienceStatus.IMPLEMENTED, ExperienceStatus.PROTOTYPE})
 
 
 class RetrievalOutcome(StrEnum):
@@ -100,9 +98,8 @@ class ResponseDecision:
                 raise ValueError("clarification decision requires clarification text")
         elif self.clarification is not None:
             raise ValueError("only clarification decisions may carry clarification text")
-        if (
-            self.mode is ResponseMode.UNAVAILABLE
-            and (self.detail is None or not self.detail.strip())
+        if self.mode is ResponseMode.UNAVAILABLE and (
+            self.detail is None or not self.detail.strip()
         ):
             raise ValueError("unavailable decision requires detail")
 
@@ -225,8 +222,7 @@ class ResponseCoordinator:
     def _eligibility(self, policy_input: ResponsePolicyInput) -> ResponseEligibility:
         reasons: list[str] = []
         script_truth_available = any(
-            item.experience_status in _SCRIPT_TRUTH_STATUSES
-            for item in policy_input.evidence
+            item.experience_status in _SCRIPT_TRUTH_STATUSES for item in policy_input.evidence
         )
 
         if policy_input.retrieval_outcome is not RetrievalOutcome.READY:
@@ -248,8 +244,7 @@ class ResponseCoordinator:
             and not policy_input.evidence_conflict
             and policy_input.generated_script_enabled
             and script_truth_available
-            and policy_input.retrieval_confidence
-            >= self.config.generated_script_min_confidence
+            and policy_input.retrieval_confidence >= self.config.generated_script_min_confidence
         )
         return ResponseEligibility(
             retrieval_confidence=policy_input.retrieval_confidence,
