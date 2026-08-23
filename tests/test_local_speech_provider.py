@@ -277,7 +277,9 @@ def test_fake_provider_rejects_prior_session_signals_after_restart() -> None:
     assert [signal.session_id for signal in observed] == ["session-b"]
 
 
-def test_provider_diagnostics_support_latency_comparison_without_fabricating_hearsay_latency() -> None:
+def test_provider_diagnostics_support_latency_comparison_without_fabricating_hearsay_latency() -> (
+    None
+):
     fake = FakeLocalSpeechProvider(
         FakeLocalSpeechProviderConfig(nominal_window_ms=200.0),
         clock=Clock(),
