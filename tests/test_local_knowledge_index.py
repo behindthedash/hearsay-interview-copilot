@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 import sys
 import types
 
@@ -13,6 +14,7 @@ from interview_copilot.knowledge import (
     FastEmbedEmbedding,
     LocalKnowledgeIndex,
     ManifestValidationError,
+    SQLiteKnowledgeStore,
 )
 from interview_copilot.knowledge.chunking import chunk_document
 from interview_copilot.knowledge.manifest import load_manifest, read_document_text
@@ -67,6 +69,15 @@ def _build_corpus(tmp_path):
     return root, documents
 
 
+def _build_index(root, database, embedder, *, collection="career"):
+    return LocalKnowledgeIndex(
+        root,
+        SQLiteKnowledgeStore(database),
+        embedder,
+        collection=collection,
+    )
+
+
 def test_manifest_requires_explicit_experience_status(tmp_path):
     root = tmp_path / "corpus"
     root.mkdir()
@@ -106,7 +117,7 @@ def test_chunk_ids_are_stable_for_unchanged_content(tmp_path):
 def test_incremental_refresh_reuses_unchanged_documents_and_removes_deleted_sources(tmp_path):
     root, documents = _build_corpus(tmp_path)
     embedder = CountingEmbedding()
-    index = LocalKnowledgeIndex(root, tmp_path / "knowledge.sqlite3", embedder)
+    index = _build_index(root, tmp_path / "knowledge.sqlite3", embedder)
 
     first = index.refresh()
     first_embed_count = embedder.documents_embedded
@@ -133,12 +144,12 @@ def test_incremental_refresh_reuses_unchanged_documents_and_removes_deleted_sour
     _write_manifest(root, [documents[0]])
     fourth = index.refresh()
     assert fourth.removed == 1
-    assert {chunk.source_uri for chunk in index.store.fetch_chunks()} == {"warehouse.md"}
+    assert {chunk.source_uri for chunk in index.store.fetch_chunks("career")} == {"warehouse.md"}
 
 
-def test_retrieval_preserves_provenance_and_truth_status(tmp_path):
+def test_retrieval_preserves_provenance_truth_status_and_collection(tmp_path):
     root, _ = _build_corpus(tmp_path)
-    index = LocalKnowledgeIndex(
+    index = _build_index(
         root,
         tmp_path / "knowledge.sqlite3",
         DeterministicHashEmbedding(),
@@ -147,6 +158,7 @@ def test_retrieval_preserves_provenance_and_truth_status(tmp_path):
 
     warehouse = index.query("Snowflake architecture dbt", top_k=2)
     assert warehouse
+    assert warehouse[0].collection == "career"
     assert warehouse[0].chunk.source_uri == "warehouse.md"
     assert warehouse[0].chunk.experience_status is ExperienceStatus.IMPLEMENTED
     assert "Snowflake" in warehouse[0].chunk.skills
@@ -157,21 +169,40 @@ def test_retrieval_preserves_provenance_and_truth_status(tmp_path):
     assert hypothetical[0].chunk.experience_status is ExperienceStatus.HYPOTHETICAL
 
 
-def test_embedding_configuration_change_rebuilds_index(tmp_path):
+def test_embedding_configuration_change_explicitly_rebuilds_index_collection(tmp_path):
     root, _ = _build_corpus(tmp_path)
     database = tmp_path / "knowledge.sqlite3"
 
-    first = LocalKnowledgeIndex(root, database, CountingEmbedding(model_id="model-v1"))
+    first = _build_index(root, database, CountingEmbedding(model_id="model-v1"))
     assert first.refresh().embedding_config_reset is False
 
     second_embedder = CountingEmbedding(model_id="model-v2")
-    second = LocalKnowledgeIndex(root, database, second_embedder)
+    second = _build_index(root, database, second_embedder)
     report = second.refresh()
 
     assert report.embedding_config_reset is True
     assert report.indexed == 2
     assert report.reused == 0
     assert second_embedder.documents_embedded > 0
+
+
+def test_provider_initialization_rebuilds_legacy_unscoped_cache(tmp_path):
+    database = tmp_path / "legacy.sqlite3"
+    with sqlite3.connect(database) as connection:
+        connection.executescript(
+            """
+            CREATE TABLE documents(source_uri TEXT PRIMARY KEY);
+            CREATE TABLE chunks(chunk_id TEXT PRIMARY KEY);
+            CREATE TABLE index_metadata(key TEXT PRIMARY KEY, value TEXT NOT NULL);
+            """
+        )
+
+    store = SQLiteKnowledgeStore(database)
+    assert store.stats().collections == 0
+
+    with sqlite3.connect(database) as connection:
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(documents)").fetchall()}
+    assert "collection" in columns
 
 
 def test_fastembed_adapter_can_require_cached_files_only(monkeypatch, tmp_path):
