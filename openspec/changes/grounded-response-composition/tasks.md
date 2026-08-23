@@ -4,19 +4,19 @@ These tasks implement the merged grounded-response/teleprompter design in depend
 
 ## 0. Delivery rules and dependency order
 
-- [ ] 0.1 Keep all runtime changes in `hearsay-interview-copilot`; do not add interview semantics, scripts, retrieval, response generation, or teleprompter state to Hearsay.
-- [ ] 0.2 Preserve the supported Hearsay transcript/session API as the integration boundary; do not consume Hearsay private queues, recorder state, UI widgets, or Whisper internals.
-- [ ] 0.3 Keep generated-response data session-scoped by default and ensure tests use synthetic knowledge/interview material only.
-- [ ] 0.4 Implement in this order unless a task explicitly states otherwise: response domain -> response policy/composition -> cue integration -> teleprompter content -> Local speech provider/alignment -> teleprompter UI -> presentation coordination -> end-to-end orchestration.
-- [ ] 0.5 For every implementation PR, require Ruff lint, Ruff format-check, and pytest to pass on Python 3.11 and 3.14 through the existing CI workflow.
+- [x] 0.1 Keep all runtime changes in `hearsay-interview-copilot`; do not add interview semantics, scripts, retrieval, response generation, or teleprompter state to Hearsay.
+- [x] 0.2 Preserve the supported Hearsay transcript/session API as the integration boundary; do not consume Hearsay private queues, recorder state, UI widgets, or Whisper internals.
+- [x] 0.3 Keep generated-response data session-scoped by default and ensure tests use synthetic knowledge/interview material only.
+- [x] 0.4 Implement in this order unless a task explicitly states otherwise: response domain -> response policy/composition -> cue integration -> teleprompter content -> Local speech provider/alignment -> teleprompter UI -> presentation coordination -> end-to-end orchestration.
+- [x] 0.5 For every implementation PR, require Ruff lint, Ruff format-check, and pytest to pass on Python 3.11 and 3.14 through the existing CI workflow.
 
 ## 1. `grounded-response-composition` — response domain
 
-- [ ] 1.1 Add a `ResponseMode` model/enumeration containing exactly `generated-script`, `cue-only`, `clarification`, and `unavailable`.
-- [ ] 1.2 Add an immutable response-package model carrying response mode, interviewer query generation, evidence/provenance references, truth/experience status, confidence/eligibility metadata, optional script content, and optional bounded cues.
-- [ ] 1.3 Define explicit response-package validation so impossible states are rejected, including generated-script without script text, cue-only without usable cue content, and generated content without a query generation.
-- [ ] 1.4 Add lifecycle state for `pending`, `active`, `dismissed`, and `superseded` response packages without conflating that lifecycle with teleprompter alignment state.
-- [ ] 1.5 Add unit tests covering valid and invalid package combinations, serialization/equality behavior where applicable, and preservation of provenance/truth-status metadata.
+- [x] 1.1 Add a `ResponseMode` model/enumeration containing exactly `generated-script`, `cue-only`, `clarification`, and `unavailable`.
+- [x] 1.2 Add an immutable response-package model carrying response mode, interviewer query generation, evidence/provenance references, truth/experience status, confidence/eligibility metadata, optional script content, and optional bounded cues.
+- [x] 1.3 Define explicit response-package validation so impossible states are rejected, including generated-script without script text, cue-only without usable cue content, and generated content without a query generation.
+- [x] 1.4 Add lifecycle state for `pending`, `active`, `dismissed`, and `superseded` response packages without conflating that lifecycle with teleprompter alignment state.
+- [x] 1.5 Add unit tests covering valid and invalid package combinations, serialization/equality behavior where applicable, and preservation of provenance/truth-status metadata.
 
 ## 2. `grounded-response-composition` — response-mode policy
 
