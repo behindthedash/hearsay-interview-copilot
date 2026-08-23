@@ -236,10 +236,7 @@ class SQLiteLocalStore:
             )
 
         matrix = np.stack(
-            [
-                np.frombuffer(row["embedding"], dtype=np.float32, count=dimension)
-                for row in rows
-            ]
+            [np.frombuffer(row["embedding"], dtype=np.float32, count=dimension) for row in rows]
         )
         matrix_norms = np.linalg.norm(matrix, axis=1)
         query_norm = float(np.linalg.norm(query))
