@@ -36,9 +36,7 @@ class CueResponseAssemblerConfig:
 
     def __post_init__(self) -> None:
         if not 1 <= self.max_cues <= ResponsePackage.MAX_CUES:
-            raise ValueError(
-                f"max_cues must be between 1 and {ResponsePackage.MAX_CUES}"
-            )
+            raise ValueError(f"max_cues must be between 1 and {ResponsePackage.MAX_CUES}")
         if self.max_cue_chars < 40:
             raise ValueError("max_cue_chars must be at least 40")
 
@@ -157,9 +155,7 @@ class InterviewCueResponseAssembler:
         )
 
         if composition.status is CompositionStatus.COMPOSED:
-            claimed_keys = {
-                item.key for claim in composition.claims for item in claim.evidence
-            }
+            claimed_keys = {item.key for claim in composition.claims for item in claim.evidence}
             supporting = tuple(
                 self._bounded_cue(item)
                 for item in composition.supporting_cues
@@ -182,9 +178,9 @@ class InterviewCueResponseAssembler:
                 composition_status=composition.status,
             )
 
-        fallback_cues = tuple(
-            self._bounded_cue(item) for item in composition.supporting_cues
-        )[: self.config.max_cues]
+        fallback_cues = tuple(self._bounded_cue(item) for item in composition.supporting_cues)[
+            : self.config.max_cues
+        ]
         if fallback_cues:
             package = ResponsePackage(
                 session_id=cue.session_id,
