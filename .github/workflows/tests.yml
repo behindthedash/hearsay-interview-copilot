@@ -45,33 +45,58 @@ jobs:
   pgvector:
     name: Pgvector conformance
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: pgvector/pgvector:0.8.6-pg18
-        env:
-          POSTGRES_USER: copilot
-          POSTGRES_PASSWORD: copilot
-          POSTGRES_DB: copilot_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U copilot -d copilot_test"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
     env:
       INTERVIEW_COPILOT_TEST_PG_URL: postgresql://copilot:copilot@localhost:5432/copilot_test
       INTERVIEW_COPILOT_TEST_PG_SSLMODE: disable
+      PGVECTOR_IMAGE: pgvector/pgvector:0.8.6-pg18
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.14"
           cache: pip
+      - name: Pull pgvector image with retries
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if docker pull "$PGVECTOR_IMAGE"; then
+              exit 0
+            fi
+            if [ "$attempt" -eq 5 ]; then
+              echo "Failed to pull $PGVECTOR_IMAGE after $attempt attempts" >&2
+              exit 1
+            fi
+            delay=$((attempt * 10))
+            echo "Docker pull attempt $attempt failed; retrying in ${delay}s..." >&2
+            sleep "$delay"
+          done
+      - name: Start pgvector PostgreSQL
+        run: |
+          docker run --detach \
+            --name interview-copilot-pgvector \
+            --publish 5432:5432 \
+            --env POSTGRES_USER=copilot \
+            --env POSTGRES_PASSWORD=copilot \
+            --env POSTGRES_DB=copilot_test \
+            "$PGVECTOR_IMAGE"
+
+          for attempt in $(seq 1 30); do
+            if docker exec interview-copilot-pgvector \
+              pg_isready -U copilot -d copilot_test; then
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "pgvector PostgreSQL did not become ready" >&2
+          docker logs interview-copilot-pgvector >&2 || true
+          exit 1
       - name: Install PostgreSQL provider
         run: python -m pip install -e ".[dev,postgres]"
       - name: Run pgvector provider conformance
         run: pytest -q tests/test_pgvector_provider.py
+      - name: Stop pgvector PostgreSQL
+        if: always()
+        run: docker rm --force interview-copilot-pgvector || true
 
   required:
     name: Required
