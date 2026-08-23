@@ -17,6 +17,7 @@ from .models import (
     StoreHealth,
     StoreStats,
 )
+from .pgvector_store import PostgresKnowledgeStore, PostgresStoreError
 from .provider import EmbeddingCompatibilityError, KnowledgeStore
 from .store import SQLiteKnowledgeStore, SQLiteLocalStore
 
@@ -35,6 +36,8 @@ __all__ = [
     "KnowledgeStore",
     "LocalKnowledgeIndex",
     "ManifestValidationError",
+    "PostgresKnowledgeStore",
+    "PostgresStoreError",
     "QueryRequest",
     "RefreshReport",
     "SQLiteKnowledgeStore",
