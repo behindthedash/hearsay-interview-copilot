@@ -8,9 +8,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Protocol
 
-_GEOMETRY_RE = re.compile(
-    r"^\s*(?P<width>\d+)x(?P<height>\d+)(?P<x>[+-]\d+)(?P<y>[+-]\d+)\s*$"
-)
+_GEOMETRY_RE = re.compile(r"^\s*(?P<width>\d+)x(?P<height>\d+)(?P<x>[+-]\d+)(?P<y>[+-]\d+)\s*$")
 
 
 class WindowSurface(Protocol):
