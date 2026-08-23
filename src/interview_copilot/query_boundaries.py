@@ -168,7 +168,7 @@ class RemoteUtteranceAssembler:
                 self._last_activity_at = now
                 self._punctuation_at = now if _looks_complete(self._buffer) else None
 
-        if len(self._buffer) >= self.config.max_chars:
+        if len(self._buffer) > self.config.max_chars:
             candidate = self._emit(BoundaryReason.MAX_SIZE, now)
             if candidate is not None:
                 emitted.append(candidate)
@@ -254,7 +254,8 @@ class RemoteUtteranceAssembler:
 
         return any(
             previous == normalized
-            or SequenceMatcher(None, previous, normalized).ratio() >= self.config.duplicate_similarity
+            or SequenceMatcher(None, previous, normalized).ratio()
+            >= self.config.duplicate_similarity
             for previous, _ in self._recent
         )
 
