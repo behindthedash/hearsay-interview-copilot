@@ -2,7 +2,7 @@
 
 ## Business Objective
 
-Build a separate interview-assistance application that subscribes to live Hearsay transcript events and surfaces concise, truthful, provenance-preserving cues while an interview is happening.
+Build a separate interview-assistance application that subscribes to live Hearsay transcript events, understands coherent interviewer turns, retrieves truthful evidence, and surfaces the safest useful form of assistance: a grounded speech-ready response, concise cues, a clarification, or an explicit unavailable state.
 
 ## Host Dependencies
 
@@ -17,13 +17,15 @@ The initial integration is explicit in-process registration. No webhook or netwo
 
 ## Architectural Principles
 
-1. **Transcript events are the boundary.** Never reach into Hearsay private queues, UI, recorder, or Whisper internals.
-2. **Retrieval before generation.** The default cue is evidence and structure, not a scripted answer.
-3. **Truth status is first-class.** Implemented, prototype, design, and hypothetical material remain distinguishable end-to-end.
+1. **Transcript events are the Hearsay boundary.** Never reach into Hearsay private queues, UI, recorder, or Whisper internals.
+2. **Retrieval gates generation.** Speech-ready generation is allowed only from sufficiently strong retrieved evidence; weak or ambiguous evidence degrades to cues, clarification, or unavailable behavior.
+3. **Truth status is first-class.** Implemented, prototype, design, and hypothetical material remain distinguishable end-to-end and through any generated wording.
 4. **Personal data stays out of Git.** Real resume/project material and interview transcripts are external runtime data.
 5. **Knowledge storage is consumer-owned.** Local storage and PostgreSQL/pgvector live here, not in Hearsay.
-6. **Stale work cannot win.** New interviewer turns supersede older retrieval generations.
-7. **Failure degrades locally.** Retrieval/UI/database failure must not terminate Hearsay transcription.
+6. **Response composition is consumer-owned.** Question interpretation, response-mode selection, grounding, and speech-ready composition belong to Interview Copilot.
+7. **Stale work cannot win.** New interviewer turns supersede older retrieval and response generations.
+8. **Failure degrades locally.** Retrieval/UI/database/generation failure must not terminate Hearsay transcription or fabricate an answer.
+9. **Presentation does not own truth.** Cue and teleprompter surfaces project response packages; they do not create unsupported claims or mutate retrieval evidence.
 
 ## Capabilities
 
@@ -32,9 +34,11 @@ The initial integration is explicit in-process registration. No webhook or netwo
 - PostgreSQL/pgvector knowledge provider
 - Remote interviewer-turn boundaries
 - Interview cue retrieval and composition
+- Grounded response composition and response-mode selection
 - Compact topmost presentation primitives
 - Interview cue overlay
 - Live Interview Copilot session orchestration
+- Integration with the speech-following teleprompter for generated-script responses
 
 ## Acceptance Journey
 
@@ -43,7 +47,9 @@ The initial integration is explicit in-process registration. No webhook or netwo
 3. The consumer assembles a coherent interviewer turn.
 4. The turn is searched against explicitly selected knowledge scopes.
 5. Relevant evidence is returned with provenance and experience status.
-6. A concise cue appears near the webcam.
-7. A newer interviewer turn supersedes stale retrieval/cue work.
-8. Consumer failure does not stop the Hearsay host.
-9. Teardown unregisters handlers and clears transient query/cue state.
+6. The response coordinator selects generated-script, cue-only, clarification, or unavailable behavior based on evidence quality and policy.
+7. A generated script, when eligible, is concise, evidence-grounded, and staged for the teleprompter with optional supporting cues.
+8. Weak/ambiguous/no-match evidence never becomes an invented scripted answer.
+9. A newer interviewer turn supersedes stale retrieval/composition work.
+10. Consumer failure does not stop the Hearsay host.
+11. Teardown unregisters handlers and clears transient query, response, and cue state.
