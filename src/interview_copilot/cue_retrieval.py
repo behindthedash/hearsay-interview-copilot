@@ -5,6 +5,7 @@ import re
 import threading
 import time
 from collections.abc import Callable
+from contextlib import suppress
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Final
@@ -306,10 +307,8 @@ class LatestQueryWinsWorker:
                 self._queue.task_done()
             except queue.Empty:
                 break
-        try:
+        with suppress(queue.Full):
             self._queue.put_nowait(_SENTINEL)
-        except queue.Full:
-            pass
         self._thread.join(timeout=timeout)
 
     def _run(self) -> None:
@@ -326,10 +325,8 @@ class LatestQueryWinsWorker:
                 with self._lock:
                     publish = not self._closed and self._latest_key == key
                 if publish:
-                    try:
+                    with suppress(Exception):
                         self.on_cue(cue)
-                    except Exception:
-                        pass
             finally:
                 self._queue.task_done()
 
