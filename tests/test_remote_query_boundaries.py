@@ -41,7 +41,12 @@ def test_local_and_nonfinal_segments_do_not_drive_query_assembly():
     clock = FakeClock()
     assembler = RemoteUtteranceAssembler(clock=clock)
 
-    assert assembler.ingest(segment("Tell me about your background?", 1, source=TranscriptSource.LOCAL)) == []
+    assert (
+        assembler.ingest(
+            segment("Tell me about your background?", 1, source=TranscriptSource.LOCAL)
+        )
+        == []
+    )
     assert assembler.ingest(segment("Remote draft", 2, is_final=False)) == []
     assert assembler.buffered_text == ""
     assert assembler.session_id is None
