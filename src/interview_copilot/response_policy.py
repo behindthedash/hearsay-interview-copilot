@@ -100,9 +100,11 @@ class ResponseDecision:
                 raise ValueError("clarification decision requires clarification text")
         elif self.clarification is not None:
             raise ValueError("only clarification decisions may carry clarification text")
-        if self.mode is ResponseMode.UNAVAILABLE:
-            if self.detail is None or not self.detail.strip():
-                raise ValueError("unavailable decision requires detail")
+        if (
+            self.mode is ResponseMode.UNAVAILABLE
+            and (self.detail is None or not self.detail.strip())
+        ):
+            raise ValueError("unavailable decision requires detail")
 
 
 class ResponseCoordinator:
