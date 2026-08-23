@@ -20,14 +20,14 @@ These tasks implement the merged grounded-response/teleprompter design in depend
 
 ## 2. `grounded-response-composition` — response-mode policy
 
-- [ ] 2.1 Introduce a response coordinator that accepts one eligible interviewer query generation plus its bounded retrieval result and produces exactly one response mode.
-- [ ] 2.2 Define deterministic eligibility inputs for scripted generation, including retrieval relevance/quality, conflict/ambiguity state, knowledge truth status, and whether generated-script mode is enabled.
-- [ ] 2.3 Select `generated-script` only when evidence is sufficiently strong and internally consistent for a speech-ready answer.
-- [ ] 2.4 Select `cue-only` when evidence supports useful talking points but is not sufficient for a trustworthy complete script.
-- [ ] 2.5 Select `clarification` when the interviewer question or retrieved evidence is ambiguous enough that asking/reflecting a clarification is safer than answering directly.
-- [ ] 2.6 Select `unavailable` when no trustworthy supporting evidence is available or retrieval fails in a way that prevents useful guidance.
-- [ ] 2.7 Bind every coordinator result to the originating query generation and reject activation of results superseded by a newer generation.
-- [ ] 2.8 Add table-driven tests for all four response modes, including weak evidence, conflicting evidence, hypothetical-only evidence, no-match, provider failure, and scripted-generation-disabled cases.
+- [x] 2.1 Introduce a response coordinator that accepts one eligible interviewer query generation plus its bounded retrieval result and produces exactly one response mode.
+- [x] 2.2 Define deterministic eligibility inputs for scripted generation, including retrieval relevance/quality, conflict/ambiguity state, knowledge truth status, and whether generated-script mode is enabled.
+- [x] 2.3 Select `generated-script` only when evidence is sufficiently strong and internally consistent for a speech-ready answer.
+- [x] 2.4 Select `cue-only` when evidence supports useful talking points but is not sufficient for a trustworthy complete script.
+- [x] 2.5 Select `clarification` when the interviewer question or retrieved evidence is ambiguous enough that asking/reflecting a clarification is safer than answering directly.
+- [x] 2.6 Select `unavailable` when no trustworthy supporting evidence is available or retrieval fails in a way that prevents useful guidance.
+- [x] 2.7 Bind every coordinator result to the originating query generation and reject activation of results superseded by a newer generation.
+- [x] 2.8 Add table-driven tests for all four response modes, including weak evidence, conflicting evidence, hypothetical-only evidence, no-match, provider failure, and scripted-generation-disabled cases.
 
 ## 3. `grounded-response-composition` — grounded script composer
 
