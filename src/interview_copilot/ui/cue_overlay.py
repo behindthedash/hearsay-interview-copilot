@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
+from contextlib import suppress
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
@@ -486,10 +487,8 @@ class TkCueOverlayWindow:
     def _persist_now(self) -> None:
         self._persist_after_id = None
         if self.settings_store is not None:
-            try:
+            with suppress(ValueError, self._tk.TclError):
                 self.presenter.persist_geometry()
-            except (ValueError, self._tk.TclError):
-                pass
 
 
 class _TkCueOverlayView:
