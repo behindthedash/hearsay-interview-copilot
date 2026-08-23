@@ -378,8 +378,8 @@ class PostgresKnowledgeStore:
                 """,
                 (collection, document.source_uri),
             )
-            if chunks:
-                connection.executemany(
+            for write in chunks:
+                connection.execute(
                     f"""
                     INSERT INTO {self._table("chunks")}(
                         collection, chunk_id, source_uri, ordinal, content, content_hash,
@@ -390,24 +390,21 @@ class PostgresKnowledgeStore:
                         %s::jsonb, %s::jsonb, %s::jsonb, %s
                     )
                     """,
-                    [
-                        (
-                            collection,
-                            write.chunk.chunk_id,
-                            write.chunk.source_uri,
-                            write.chunk.ordinal,
-                            write.chunk.content,
-                            write.chunk.content_hash,
-                            write.chunk.title,
-                            write.chunk.experience_status.value,
-                            write.chunk.project,
-                            json.dumps(write.chunk.topics),
-                            json.dumps(write.chunk.skills),
-                            json.dumps(write.chunk.metadata, sort_keys=True),
-                            np.asarray(write.embedding, dtype=np.float32),
-                        )
-                        for write in chunks
-                    ],
+                    (
+                        collection,
+                        write.chunk.chunk_id,
+                        write.chunk.source_uri,
+                        write.chunk.ordinal,
+                        write.chunk.content,
+                        write.chunk.content_hash,
+                        write.chunk.title,
+                        write.chunk.experience_status.value,
+                        write.chunk.project,
+                        json.dumps(write.chunk.topics),
+                        json.dumps(write.chunk.skills),
+                        json.dumps(write.chunk.metadata, sort_keys=True),
+                        np.asarray(write.embedding, dtype=np.float32),
+                    ),
                 )
 
     def delete_document(self, collection: str, source_uri: str) -> None:
@@ -527,10 +524,7 @@ class PostgresKnowledgeStore:
             return StoreHealth(
                 healthy=True,
                 provider=self.provider_name,
-                detail=(
-                    f"schema_version={schema_version['value']}; "
-                    f"vector={extension['extversion']}"
-                ),
+                detail=f"schema_version={schema_version['value']}; vector={extension['extversion']}",
             )
         except Exception as exc:
             return StoreHealth(
