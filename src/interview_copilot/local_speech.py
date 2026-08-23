@@ -233,9 +233,7 @@ class HearsayLocalSpeechProvider:
         else:
             health = LocalSpeechProviderHealth.HEALTHY
 
-        average_latency_ms = (
-            latency_total_ms / latency_samples if latency_samples else None
-        )
+        average_latency_ms = latency_total_ms / latency_samples if latency_samples else None
         return LocalSpeechProviderDiagnostics(
             provider_name=self.provider_name,
             health=health,
@@ -300,7 +298,7 @@ class HearsayLocalSpeechProvider:
             signal = LocalSpeechSignal(
                 provider_name=self.provider_name,
                 session_id=event_session_id,
-                sequence=int(getattr(event, "sequence")),
+                sequence=int(event.sequence),
                 text=text,
                 received_at=received_at,
                 final=True,
