@@ -392,7 +392,11 @@ class FakeLocalSpeechProvider:
             active_session_id = self._active_session_id
             handler = self._handler
             event_session_id = session_id or active_session_id
-            if handler is None or active_session_id is None or event_session_id != active_session_id:
+            if (
+                handler is None
+                or active_session_id is None
+                or event_session_id != active_session_id
+            ):
                 self._ignored_stale += 1
                 return False
             if not normalized:
