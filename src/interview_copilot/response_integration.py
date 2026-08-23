@@ -272,5 +272,6 @@ def _bounded_text(text: str, limit: int) -> str:
     normalized = " ".join(text.split())
     if len(normalized) <= limit:
         return normalized
-    clipped = normalized[: limit + 1].rsplit(" ", 1)[0].rstrip(" ,;:-")
-    return f"{clipped}…"
+    budget = limit - 1
+    clipped = normalized[: budget + 1].rsplit(" ", 1)[0].rstrip(" ,;:-")
+    return f"{clipped[:budget]}…"
