@@ -560,9 +560,7 @@ class _TkCueOverlayView:
         self.question_label.configure(
             text=(f"Question: {projection.question}" if projection.question else "")
         )
-        self.primary_label.configure(
-            text=self._evidence_text("Story", projection.primary_story)
-        )
+        self.primary_label.configure(text=self._evidence_text("Story", projection.primary_story))
         for label in self._support_labels:
             label.destroy()
         self._support_labels.clear()
@@ -577,9 +575,7 @@ class _TkCueOverlayView:
             label.pack(fill="x", pady=(0, 3))
             self._apply_body_font(label)
             self._support_labels.append(label)
-        self.bridge_label.configure(
-            text=self._evidence_text("Bridge", projection.role_bridge)
-        )
+        self.bridge_label.configure(text=self._evidence_text("Bridge", projection.role_bridge))
         self.detail_label.configure(text=projection.detail or "")
         self.set_font_size(self.font_size)
 
@@ -601,7 +597,4 @@ class _TkCueOverlayView:
         if evidence is None:
             return ""
         project = f" · {evidence.project}" if evidence.project else ""
-        return (
-            f"{prefix} [{evidence.status_label}] {evidence.title}{project}: "
-            f"{evidence.text}"
-        )
+        return f"{prefix} [{evidence.status_label}] {evidence.title}{project}: {evidence.text}"
