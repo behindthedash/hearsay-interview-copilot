@@ -63,13 +63,13 @@ These tasks implement the merged grounded-response/teleprompter design in depend
 
 ## 6. `local-speech-alignment` — Local speech provider boundary
 
-- [ ] 6.1 Define a consumer-owned Local speech signal provider interface containing only the information alignment needs, independent of Hearsay private implementation details.
-- [ ] 6.2 Implement a Hearsay-backed provider adapter that converts supported finalized `Local` transcript events into the alignment signal contract.
-- [ ] 6.3 Keep `Remote` interviewer events structurally ineligible for teleprompter alignment.
-- [ ] 6.4 Define provider lifecycle/teardown semantics so stale Local events cannot leak across interview sessions.
-- [ ] 6.5 Define provider health/latency diagnostics sufficient to compare finalized Hearsay events with an alternate lower-latency recognizer later.
-- [ ] 6.6 Add a test/fake provider so alignment behavior can be validated without real microphone hardware or Hearsay internals.
-- [ ] 6.7 Add contract tests proving both the Hearsay adapter and fake/alternate provider satisfy identical alignment inputs and Local-only guarantees.
+- [x] 6.1 Define a consumer-owned Local speech signal provider interface containing only the information alignment needs, independent of Hearsay private implementation details.
+- [x] 6.2 Implement a Hearsay-backed provider adapter that converts supported finalized `Local` transcript events into the alignment signal contract.
+- [x] 6.3 Keep `Remote` interviewer events structurally ineligible for teleprompter alignment.
+- [x] 6.4 Define provider lifecycle/teardown semantics so stale Local events cannot leak across interview sessions.
+- [x] 6.5 Define provider health/latency diagnostics sufficient to compare finalized Hearsay events with an alternate lower-latency recognizer later.
+- [x] 6.6 Add a test/fake provider so alignment behavior can be validated without real microphone hardware or Hearsay internals.
+- [x] 6.7 Add contract tests proving both the Hearsay adapter and fake/alternate provider satisfy identical alignment inputs and Local-only guarantees.
 
 ## 7. `local-speech-alignment` — TalkPrompter-style following behavior
 
