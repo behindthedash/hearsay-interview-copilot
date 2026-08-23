@@ -52,7 +52,7 @@ def chunk_document(document: ManifestDocument, text: str) -> list[KnowledgeChunk
     for ordinal, content in enumerate(_blocks(text)):
         normalized = normalize_text(content)
         content_hash = hashlib.sha256(normalized.encode("utf-8")).hexdigest()
-        identity = f"{document.source_uri}\0{ordinal}\0{content_hash}".encode("utf-8")
+        identity = f"{document.source_uri}\0{ordinal}\0{content_hash}".encode()
         chunk_id = hashlib.sha256(identity).hexdigest()[:32]
         chunks.append(
             KnowledgeChunk(
