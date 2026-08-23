@@ -184,7 +184,9 @@ class LocalSpeechAligner:
 
         local_indices = self._nearby_indices(len(document.sections))
         local_scores = {index: self._score_section(index) for index in local_indices}
-        current_score = local_scores.get(self._section_index, self._score_section(self._section_index))
+        current_score = local_scores.get(
+            self._section_index, self._score_section(self._section_index)
+        )
         best_local_index, best_local_score = max(
             local_scores.items(),
             key=lambda item: (item[1], -abs(item[0] - self._section_index), -item[0]),
@@ -282,7 +284,9 @@ class LocalSpeechAligner:
                 detail="recovery-pending",
             )
 
-        direction = "backward-recovery" if recovery_index < self._section_index else "skip-ahead-recovery"
+        direction = (
+            "backward-recovery" if recovery_index < self._section_index else "skip-ahead-recovery"
+        )
         return self._accept(
             recovery_index,
             recovery_score,
@@ -304,14 +308,14 @@ class LocalSpeechAligner:
         for sample_size in range(min_sample, max_sample + 1):
             sample = spoken[-sample_size:]
             reference_lengths = {
-                max(1, sample_size - 2),
+                max(self.config.min_evidence_words, sample_size - 2),
                 sample_size,
                 sample_size + 2,
                 len(reference),
             }
             for reference_length in sorted(reference_lengths):
                 window_length = min(reference_length, len(reference))
-                if window_length <= 0:
+                if window_length < self.config.min_evidence_words:
                     continue
                 for start in range(0, len(reference) - window_length + 1):
                     window = reference[start : start + window_length]
