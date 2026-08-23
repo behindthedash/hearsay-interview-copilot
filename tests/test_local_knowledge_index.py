@@ -201,9 +201,7 @@ def test_provider_initialization_rebuilds_legacy_unscoped_cache(tmp_path):
     assert store.stats().collections == 0
 
     with sqlite3.connect(database) as connection:
-        columns = {
-            row[1] for row in connection.execute("PRAGMA table_info(documents)").fetchall()
-        }
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(documents)").fetchall()}
     assert "collection" in columns
 
 
