@@ -52,14 +52,14 @@ These tasks implement the merged grounded-response/teleprompter design in depend
 
 ## 5. `teleprompter-content` — prepared and generated documents
 
-- [ ] 5.1 Extend the teleprompter document model with explicit `prepared` and `generated` origin metadata.
-- [ ] 5.2 For generated documents, retain the originating interviewer query generation and transient provenance/evidence references.
-- [ ] 5.3 Add a conversion path from a generated response package into the same ordered-section model used by prepared content.
-- [ ] 5.4 Ensure normalization produces stable section identity for the lifetime of the generated document so presentation refreshes do not reset alignment.
-- [ ] 5.5 Keep prepared-content loaders and persistence behavior backward-compatible.
-- [ ] 5.6 Keep generated documents out of prepared-content stores/source files unless the user explicitly invokes a save action.
-- [ ] 5.7 Clear generated teleprompter documents and transient provenance on session teardown unless explicitly saved.
-- [ ] 5.8 Add tests for prepared/generated origin, response-to-document conversion, stable identities across refreshes, default ephemerality, explicit save behavior, and teardown cleanup.
+- [x] 5.1 Extend the teleprompter document model with explicit `prepared` and `generated` origin metadata.
+- [x] 5.2 For generated documents, retain the originating interviewer query generation and transient provenance/evidence references.
+- [x] 5.3 Add a conversion path from a generated response package into the same ordered-section model used by prepared content.
+- [x] 5.4 Ensure normalization produces stable section identity for the lifetime of the generated document so presentation refreshes do not reset alignment.
+- [x] 5.5 Keep prepared-content loaders and persistence behavior backward-compatible.
+- [x] 5.6 Keep generated documents out of prepared-content stores/source files unless the user explicitly invokes a save action.
+- [x] 5.7 Clear generated teleprompter documents and transient provenance on session teardown unless explicitly saved.
+- [x] 5.8 Add tests for prepared/generated origin, response-to-document conversion, stable identities across refreshes, default ephemerality, explicit save behavior, and teardown cleanup.
 
 ## 6. `local-speech-alignment` — Local speech provider boundary
 
