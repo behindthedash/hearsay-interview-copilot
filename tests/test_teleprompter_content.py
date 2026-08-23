@@ -7,6 +7,7 @@ import pytest
 from interview_copilot.knowledge.models import ExperienceStatus
 from interview_copilot.response import (
     EvidenceReference,
+    ResponseCue,
     ResponseEligibility,
     ResponseMode,
     ResponsePackage,
@@ -122,29 +123,23 @@ def test_changed_prepared_section_changes_identity_but_unchanged_reload_does_not
 
 
 @pytest.mark.parametrize(
-    "text",
-    ["", "   \n\t", "# Heading\n---"],
+    ("text", "content_format"),
+    [
+        ("", TeleprompterFormat.TEXT),
+        ("   \n\t", TeleprompterFormat.TEXT),
+        ("# Heading\n---", TeleprompterFormat.MARKDOWN),
+    ],
 )
-def test_empty_or_non_speech_content_fails_clearly(text: str) -> None:
-    loader = TeleprompterContentLoader()
-    content_format = (
-        TeleprompterFormat.MARKDOWN if text.startswith("#") else TeleprompterFormat.TEXT
-    )
-
-    if text.startswith("#"):
-        document = loader.load_prepared(
+def test_empty_or_non_speech_content_fails_clearly(
+    text: str,
+    content_format: TeleprompterFormat,
+) -> None:
+    with pytest.raises(TeleprompterContentError, match="no usable text"):
+        TeleprompterContentLoader().load_prepared(
             text,
             source_uri="memory://prepared/empty",
             content_format=content_format,
         )
-        assert document.sections[0].display_text == "---"
-    else:
-        with pytest.raises(TeleprompterContentError, match="no usable text"):
-            loader.load_prepared(
-                text,
-                source_uri="memory://prepared/empty",
-                content_format=content_format,
-            )
 
 
 def test_path_loader_supports_markdown_and_text_without_rewriting_source(tmp_path: Path) -> None:
@@ -187,6 +182,7 @@ def test_generated_response_uses_same_section_model_and_retains_provenance() -> 
 
 
 def test_generated_conversion_rejects_non_script_response_mode() -> None:
+    reference = evidence()
     package = ResponsePackage(
         session_id="session-a",
         query_generation=1,
@@ -195,12 +191,12 @@ def test_generated_conversion_rejects_non_script_response_mode() -> None:
             retrieval_confidence=0.7,
             script_eligible=False,
         ),
-        evidence=(evidence(),),
-        cues=(),
+        evidence=(reference,),
+        cues=(ResponseCue(text="Use the retrieval example.", evidence=(reference,)),),
     )
 
-    with pytest.raises(ValueError, match="cue-only response requires"):
-        _ = package
+    with pytest.raises(ValueError, match="only generated-script"):
+        generated_document_from_response(package)
 
 
 def test_generated_projection_is_stable_and_reuses_unchanged_document_instance() -> None:
