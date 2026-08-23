@@ -253,7 +253,9 @@ def test_secondary_evidence_is_kept_as_bounded_supporting_cues() -> None:
         _request(
             (
                 CompositionEvidence(implemented, "I built a retrieval index with citations."),
-                CompositionEvidence(support_a, "The index refreshed incrementally from source files."),
+                CompositionEvidence(
+                    support_a, "The index refreshed incrementally from source files."
+                ),
                 CompositionEvidence(support_b, "Add a review gate before publishing an answer."),
                 CompositionEvidence(support_c, "Use a confidence threshold for uncertain matches."),
             )
