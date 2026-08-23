@@ -16,14 +16,18 @@ class ManifestValidationError(ValueError):
 def _string_tuple(value: Any, *, field_name: str, source_uri: str) -> tuple[str, ...]:
     if value is None:
         return ()
-    if not isinstance(value, list) or not all(isinstance(item, str) and item.strip() for item in value):
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) and item.strip() for item in value
+    ):
         raise ManifestValidationError(
             f"{source_uri}: '{field_name}' must be a list of non-empty strings"
         )
     return tuple(item.strip() for item in value)
 
 
-def load_manifest(corpus_root: str | Path, manifest_name: str = "corpus.json") -> list[ManifestDocument]:
+def load_manifest(
+    corpus_root: str | Path, manifest_name: str = "corpus.json"
+) -> list[ManifestDocument]:
     root = Path(corpus_root).expanduser().resolve()
     manifest_path = root / manifest_name
     try:
@@ -69,9 +73,7 @@ def load_manifest(corpus_root: str | Path, manifest_name: str = "corpus.json") -
 
         raw_status = item.get("experience_status")
         if raw_status is None:
-            raise ManifestValidationError(
-                f"{source_uri}: required 'experience_status' is missing"
-            )
+            raise ManifestValidationError(f"{source_uri}: required 'experience_status' is missing")
         try:
             status = ExperienceStatus(str(raw_status))
         except ValueError as exc:
@@ -99,8 +101,12 @@ def load_manifest(corpus_root: str | Path, manifest_name: str = "corpus.json") -
                 title=title.strip(),
                 experience_status=status,
                 project=project.strip() if isinstance(project, str) else None,
-                topics=_string_tuple(item.get("topics"), field_name="topics", source_uri=source_uri),
-                skills=_string_tuple(item.get("skills"), field_name="skills", source_uri=source_uri),
+                topics=_string_tuple(
+                    item.get("topics"), field_name="topics", source_uri=source_uri
+                ),
+                skills=_string_tuple(
+                    item.get("skills"), field_name="skills", source_uri=source_uri
+                ),
                 metadata=metadata,
             )
         )
