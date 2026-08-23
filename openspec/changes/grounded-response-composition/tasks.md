@@ -42,13 +42,13 @@ These tasks implement the merged grounded-response/teleprompter design in depend
 
 ## 4. `interview-cues` — response-package integration
 
-- [ ] 4.1 Refactor cue composition so retrieval/evidence state can feed the response coordinator without losing existing cue provenance/status metadata.
-- [ ] 4.2 Keep cue projection bounded and glanceable even when the same response package contains a full generated script.
-- [ ] 4.3 Ensure generated-script mode shows only supporting points in the cue projection and does not duplicate the teleprompter script.
-- [ ] 4.4 Ensure cue-only mode remains fully usable without creating or activating generated teleprompter content.
-- [ ] 4.5 Map no-match/provider-failure evidence states into clarification/unavailable behavior without terminating the Hearsay host session.
-- [ ] 4.6 Preserve existing stale-generation protection so an older cue/retrieval result cannot replace newer response guidance.
-- [ ] 4.7 Add tests for generated-script + supporting-cues, cue-only, clarification, unavailable, retrieval failure, and stale-result scenarios.
+- [x] 4.1 Refactor cue composition so retrieval/evidence state can feed the response coordinator without losing existing cue provenance/status metadata.
+- [x] 4.2 Keep cue projection bounded and glanceable even when the same response package contains a full generated script.
+- [x] 4.3 Ensure generated-script mode shows only supporting points in the cue projection and does not duplicate the teleprompter script.
+- [x] 4.4 Ensure cue-only mode remains fully usable without creating or activating generated teleprompter content.
+- [x] 4.5 Map no-match/provider-failure evidence states into clarification/unavailable behavior without terminating the Hearsay host session.
+- [x] 4.6 Preserve existing stale-generation protection so an older cue/retrieval result cannot replace newer response guidance.
+- [x] 4.7 Add tests for generated-script + supporting-cues, cue-only, clarification, unavailable, retrieval failure, and stale-result scenarios.
 
 ## 5. `teleprompter-content` — prepared and generated documents
 
