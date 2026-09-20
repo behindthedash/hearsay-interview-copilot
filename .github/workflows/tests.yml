@@ -109,17 +109,3 @@ jobs:
       - name: Stop PostgreSQL 18
         if: always()
         run: sudo pg_ctlcluster 18 main stop --mode fast || true
-
-  required:
-    name: Required
-    if: always()
-    needs: [lint-test-build, pgvector]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Verify required jobs passed
-        env:
-          LINT_TEST_BUILD_RESULT: ${{ needs.lint-test-build.result }}
-          PGVECTOR_RESULT: ${{ needs.pgvector.result }}
-        run: |
-          test "$LINT_TEST_BUILD_RESULT" = "success"
-          test "$PGVECTOR_RESULT" = "success"
