@@ -11,4 +11,3 @@ pre_pr_cmd: "ruff check src tests && ruff format --check src tests && pytest -q"
 automerge:
   enabled: true
   max_risk: medium
-  target_branches: []
