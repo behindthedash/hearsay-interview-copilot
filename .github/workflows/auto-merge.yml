@@ -1,0 +1,79 @@
+name: 'CI: Auto-merge on open'
+on:
+  pull_request:
+    # `ready_for_review` so auto-merge engages when a draft is marked ready;
+    # the `opened`/`reopened` runs are skipped below while it is still a draft.
+    # `labeled` so a go:risk-low/medium label applied AFTER PR creation (the
+    # normal case for a PR the classifier never touched) re-triggers
+    # eligibility instead of leaving the PR stuck with no way to arm
+    # auto-merge short of a manual `gh pr merge --auto` or a new push.
+    types: [opened, reopened, ready_for_review, labeled, unlabeled]
+
+jobs:
+  test-automerge-eligibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - run: bash scripts/ci/test_automerge_eligibility.sh
+
+  auto-merge:
+    # Never attempt auto-merge on a draft PR — GitHub rejects it
+    # ("Pull request is a draft") which fails this check red on every draft.
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      # Eligibility requires a POSITIVE go:risk-low/medium label, not just the
+      # absence of go:no-automerge (set by pre_pr_gate.py when
+      # docs/specs/go-policy.yaml declares automerge disabled or the PR risk
+      # exceeds the configured max_risk — see routes.md's Auto-Merge
+      # Eligibility section). A PR the classifier never touched (e.g. one
+      # created directly via `gh pr create`) previously merged unconditionally
+      # on green CI alone — verified live 2026-08-01, every hand-created PR
+      # that day carried zero labels and still auto-merged.
+      - name: Check automerge eligibility
+        id: check-automerge
+        run: |
+          labels=$(gh pr view "${{ github.event.pull_request.number }}" \
+            --json labels --jq '.labels[].name' -R "${{ github.repository }}")
+          has_no_automerge="false"
+          if echo "$labels" | grep -q "^go:no-automerge$"; then
+            has_no_automerge="true"
+          fi
+          has_risk_label="false"
+          if echo "$labels" | grep -qE "^go:risk-(low|medium)$"; then
+            has_risk_label="true"
+          fi
+
+          bash scripts/ci/automerge_eligibility.sh \
+            --github-output "$GITHUB_OUTPUT" \
+            --has-no-automerge-label "$has_no_automerge" \
+            --has-risk-label "$has_risk_label"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Native GitHub auto-merge persists once armed regardless of later label
+      # changes -- an eligibility re-check on a later `labeled` event that
+      # only skips re-arming does nothing to stop a merge already armed on an
+      # earlier, more permissive trigger. Verified live 2026-08-01 (PR #89):
+      # go:no-automerge was applied AFTER the PR's `opened` event had already
+      # armed auto-merge on the (then-eligible) old logic, and with no
+      # trigger or disarm step to catch it, the PR merged anyway once checks
+      # passed. Disarming on every ineligible re-check closes that gap; `||
+      # true` because disabling auto-merge on a PR that was never armed is a
+      # harmless no-op, not a failure.
+      - name: Disarm on ineligible
+        if: steps.check-automerge.outputs.eligible != 'true'
+        run: gh pr merge --disable-auto "${{ github.event.pull_request.number }}" -R "${{ github.repository }}" || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Arm auto-merge
+        if: steps.check-automerge.outputs.eligible == 'true'
+        run: gh pr merge --auto --squash "${{ github.event.pull_request.number }}" -R "${{ github.repository }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
