@@ -1,0 +1,13 @@
+# Worktrail policy for hearsay-interview-copilot.
+# Loaded by the Worktrail front door (policy.py).
+
+base_branch: main
+
+# pre_pr_cmd: universal pre-PR test gate (pre_pr_gate.py) -- enforced on every
+# PR-producing route. Mirrors CI's own Lint, Test & Build job so a PR cannot be
+# opened against a tree that job would reject.
+pre_pr_cmd: "ruff check src tests && ruff format --check src tests && pytest -q"
+
+automerge:
+  enabled: true
+  max_risk: medium

@@ -29,7 +29,12 @@ dev = [
 where = ["src"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+# `scripts/ci` is here because its `test_*.py` files would otherwise be
+# collected by nothing: `pytest -q` (CI's own Lint, Test & Build step) walked
+# only `tests`, so scripts/ci/test_check_gitleaks_signal_integrity.py would be
+# green-by-omission. Adding the path makes every committed test reachable from
+# the one canonical entrypoint. Same fix as worktrail's own pyproject.toml.
+testpaths = ["tests", "scripts/ci"]
 
 [tool.ruff]
 target-version = "py311"

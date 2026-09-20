@@ -8,24 +8,8 @@ permissions:
   contents: read
 
 jobs:
-  lint:
-    name: Ruff
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-python@v7.0.0
-        with:
-          python-version: "3.11"
-          cache: pip
-      - name: Install quality tools
-        run: python -m pip install -e ".[dev]"
-      - name: Lint
-        run: ruff check src tests
-      - name: Format check
-        run: ruff format --check src tests
-
-  test:
-    name: Pytest (Python ${{ matrix.python-version }})
+  lint-test-build:
+    name: "Lint, Test & Build"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -39,7 +23,11 @@ jobs:
           cache: pip
       - name: Install
         run: python -m pip install -e ".[dev]"
-      - name: Test
+      - name: Ruff lint
+        run: ruff check src tests
+      - name: Ruff format check
+        run: ruff format --check src tests
+      - name: pytest
         run: pytest -q
 
   pgvector:
@@ -125,15 +113,13 @@ jobs:
   required:
     name: Required
     if: always()
-    needs: [lint, test, pgvector]
+    needs: [lint-test-build, pgvector]
     runs-on: ubuntu-latest
     steps:
       - name: Verify required jobs passed
         env:
-          LINT_RESULT: ${{ needs.lint.result }}
-          TEST_RESULT: ${{ needs.test.result }}
+          LINT_TEST_BUILD_RESULT: ${{ needs.lint-test-build.result }}
           PGVECTOR_RESULT: ${{ needs.pgvector.result }}
         run: |
-          test "$LINT_RESULT" = "success"
-          test "$TEST_RESULT" = "success"
+          test "$LINT_TEST_BUILD_RESULT" = "success"
           test "$PGVECTOR_RESULT" = "success"
