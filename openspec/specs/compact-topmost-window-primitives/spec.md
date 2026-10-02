@@ -5,7 +5,11 @@ Provides reusable presentation mechanics for compact topmost Interview Copilot w
 ## Requirements
 
 ### Requirement: Topmost presentation mechanics are reusable
-Cue and teleprompter views SHALL share the same topmost, opacity, geometry, and safe-update mechanics rather than duplicating them.
+The shared primitive SHALL own topmost, opacity, geometry persistence, and visible-screen recovery while leaving domain rendering/state to consumers.
+
+#### Scenario: Cue and teleprompter create windows
+- **WHEN** both use the primitive
+- **THEN** they receive consistent presentation mechanics without sharing domain state
 
 ### Requirement: Content updates do not force focus
 Background updates SHALL NOT intentionally activate the projection or steal focus from the foreground meeting application.
